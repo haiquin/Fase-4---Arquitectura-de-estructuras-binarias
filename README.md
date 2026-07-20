@@ -50,12 +50,11 @@ Y luego incluirlas en GitHub:
 ```markdown
 ## Login
 
-<img width="516" height="678" alt="image" src="https://github.com/user-attachments/assets/5d6f3e0f-03c5-4e4e-be72-d32f5015ce78" />
+![Login](imagenes/login.png)
 
 ## Ventana Principal
 
-<img width="995" height="672" alt="image" src="https://github.com/user-attachments/assets/67512ad2-9139-4e11-b400-422cd397a418" />
-
+![Principal](imagenes/principal.png)
 ```
 
 ---
@@ -227,4 +226,4 @@ Se permite su uso como material de aprendizaje citando al autor.
 
 ## ⭐ Si este proyecto te fue útil
 
-No olvides dejar una ⭐ en el repositorio.# Fase-4---Arquitectura-de-estructuras-binarias
+No olvides dejar una ⭐ en el repositorio.
