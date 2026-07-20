@@ -50,7 +50,7 @@ Y luego incluirlas en GitHub:
 ## 🔐 Login
 
 <p align="center">
-  <img src="<img width="517" height="679" alt="image" src="https://github.com/user-attachments/assets/065bd230-b2bc-4331-9448-d29e5a9e0cf6" />
+  <img width="517" height="679" alt="image" src="https://github.com/user-attachments/assets/6b886bc0-90bd-4cda-94ba-9c4d88642194" />
 ">
 </p>
 
@@ -59,7 +59,7 @@ Y luego incluirlas en GitHub:
 ## 🏠 Ventana Principal
 
 <p align="center">
-  <img src="<img width="988" height="674" alt="image" src="https://github.com/user-attachments/assets/069ff361-6cf2-4796-811d-8c9dcc887147 "/>
+<img width="988" height="674" alt="Captura de pantalla 2026-07-20 164415" src="https://github.com/user-attachments/assets/e7353313-d868-48bd-817d-4e74ee70c2ab" />
 ">
 </p>
 
