@@ -47,15 +47,23 @@ imagenes/
 
 Y luego incluirlas en GitHub:
 
-```markdown
-## Login
+## 🔐 Login
 
-![Login](imagenes/login.png)
+<p align="center">
+  <img src="<img width="517" height="679" alt="image" src="https://github.com/user-attachments/assets/065bd230-b2bc-4331-9448-d29e5a9e0cf6" />
+">
+</p>
 
-## Ventana Principal
+---
 
-![Principal](imagenes/principal.png)
-```
+## 🏠 Ventana Principal
+
+<p align="center">
+  <img src="<img width="988" height="674" alt="image" src="https://github.com/user-attachments/assets/069ff361-6cf2-4796-811d-8c9dcc887147 "/>
+">
+</p>
+
+---
 
 ---
 
