@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-from datetime import datetime
 from PIL import Image, ImageTk
 
 
@@ -75,17 +74,25 @@ class ArbolBinario:
             nivel_actual += 1
 
     # ------------------------------------------------------
-    # BUSCAR
+    # BUSCAR (devuelve booleano)
     # ------------------------------------------------------
 
     def buscar(self, valor):
+        return self.buscar_nodo(valor) is not None
+
+    # ------------------------------------------------------
+    # BUSCAR NODO (devuelve el nodo encontrado, o None)
+    # Se usa para poder resaltarlo gráficamente en el canvas.
+    # ------------------------------------------------------
+
+    def buscar_nodo(self, valor):
 
         actual = self.raiz
 
         while actual is not None:
 
             if valor == actual.valor:
-                return True
+                return actual
 
             elif valor < actual.valor:
                 actual = actual.izquierdo
@@ -93,7 +100,7 @@ class ArbolBinario:
             else:
                 actual = actual.derecho
 
-        return False
+        return None
 
     # ------------------------------------------------------
     # RECORRIDOS
@@ -151,6 +158,14 @@ class ArbolBinario:
 # ==========================================================
 
 class Login:
+
+    # ==========================================
+    # Fecha de elaboración del proyecto.
+    # Se deja fija (no usa la fecha del sistema) para que el
+    # formulario siempre muestre la fecha real de elaboración,
+    # sin importar el día en que se ejecute la aplicación.
+    # ==========================================
+    FECHA_ELABORACION = "23/07/2026"
 
     def __init__(self):
 
@@ -273,11 +288,12 @@ class Login:
             fg="white"
         ).pack()
 
-        fecha = datetime.now().strftime("%d/%m/%Y")
+        # Fecha fija de elaboración (no depende de la fecha del
+        # sistema en el momento de la ejecución).
 
         tk.Label(
             self.informacion,
-            text=f"Fecha: {fecha}",
+            text=f"Fecha: {self.FECHA_ELABORACION}",
             font=("Segoe UI", 10),
             bg="#1E293B",
             fg="#CBD5E1"
@@ -458,19 +474,32 @@ class VentanaPrincipal:
     COLOR_LINEA = "#334155"
     COLOR_TEXTO = "#0F172A"
 
+    # Colores usados para resaltar el nodo encontrado con
+    # "Buscar Nodo"
+    COLOR_NODO_RESALTADO = "#FDE047"
+    COLOR_BORDE_RESALTADO = "#CA8A04"
+
     def __init__(self):
 
         self.arbol = ArbolBinario()
+
+        # Valor actualmente resaltado en el canvas (resultado de
+        # una búsqueda exitosa). None si no hay nada resaltado.
+        self.valor_resaltado = None
 
         self.ventana = tk.Tk()
 
         self.ventana.title("Árbol Binario de Búsqueda")
 
-        self.ventana.geometry("1000x650")
+        self.ventana.geometry("1000x720")
+        self.ventana.minsize(800, 600)
 
         self.ventana.configure(bg="#0F172A")
 
-        self.ventana.resizable(False, False)
+        # La ventana ahora puede redimensionarse: al cambiar de
+        # tamaño, la distribución de los nodos se recalcula
+        # automáticamente (ver evento <Configure> del canvas).
+        self.ventana.resizable(True, True)
 
         # ==========================================
         # ENCABEZADO
@@ -609,9 +638,18 @@ class VentanaPrincipal:
 
         self.canvas.pack(fill="both", expand=True)
 
+        # Redibuja el árbol automáticamente cuando el usuario
+        # cambia el tamaño de la ventana / del canvas.
+        self.canvas.bind("<Configure>", lambda event: self.dibujar_arbol())
+
         # ==========================================
         # PANEL DE RECORRIDOS
         # ==========================================
+        # Cada recorrido se muestra en un Entry más grande, con su
+        # propia barra de desplazamiento horizontal DEBAJO (en su
+        # propia fila de la grilla, no superpuesta), de modo que
+        # sea claramente visible y utilizable aunque el árbol
+        # tenga los 4 niveles completos y el texto sea largo.
 
         panel_recorridos = tk.Frame(
             self.ventana,
@@ -620,68 +658,82 @@ class VentanaPrincipal:
 
         panel_recorridos.pack(fill="x", padx=15, pady=(0, 15))
 
-        # --- Preorden ---
-
-        tk.Label(
-            panel_recorridos,
-            text="Preorden",
-            font=("Segoe UI", 10, "bold"),
-            bg="#0F172A",
-            fg="white"
-        ).grid(row=0, column=0, sticky="w", padx=(0, 6))
-
-        self.txt_preorden = tk.Entry(
-            panel_recorridos,
-            font=("Segoe UI", 10),
-            state="readonly",
-            readonlybackground="white"
+        self.txt_preorden = self._crear_campo_recorrido(
+            panel_recorridos, "Preorden", fila=0
         )
 
-        self.txt_preorden.grid(row=0, column=1, sticky="ew", padx=(0, 15))
-
-        # --- Inorden ---
-
-        tk.Label(
-            panel_recorridos,
-            text="Inorden",
-            font=("Segoe UI", 10, "bold"),
-            bg="#0F172A",
-            fg="white"
-        ).grid(row=0, column=2, sticky="w", padx=(0, 6))
-
-        self.txt_inorden = tk.Entry(
-            panel_recorridos,
-            font=("Segoe UI", 10),
-            state="readonly",
-            readonlybackground="white"
+        self.txt_inorden = self._crear_campo_recorrido(
+            panel_recorridos, "Inorden", fila=1
         )
 
-        self.txt_inorden.grid(row=0, column=3, sticky="ew", padx=(0, 15))
-
-        # --- Posorden ---
-
-        tk.Label(
-            panel_recorridos,
-            text="Posorden",
-            font=("Segoe UI", 10, "bold"),
-            bg="#0F172A",
-            fg="white"
-        ).grid(row=0, column=4, sticky="w", padx=(0, 6))
-
-        self.txt_posorden = tk.Entry(
-            panel_recorridos,
-            font=("Segoe UI", 10),
-            state="readonly",
-            readonlybackground="white"
+        self.txt_posorden = self._crear_campo_recorrido(
+            panel_recorridos, "Posorden", fila=2
         )
-
-        self.txt_posorden.grid(row=0, column=5, sticky="ew")
 
         panel_recorridos.grid_columnconfigure(1, weight=1)
-        panel_recorridos.grid_columnconfigure(3, weight=1)
-        panel_recorridos.grid_columnconfigure(5, weight=1)
 
         self.ventana.mainloop()
+
+    # ==========================================
+    # CREAR CAMPO DE RECORRIDO CON SCROLL HORIZONTAL
+    # ==========================================
+
+    def _crear_campo_recorrido(self, contenedor, etiqueta, fila):
+
+        # Cada recorrido ocupa DOS filas reales de la grilla:
+        #   fila_base      -> el campo de texto (Entry)
+        #   fila_base + 1  -> la barra de desplazamiento horizontal
+        # Esto evita que el Entry y el Scrollbar se encimen o se
+        # vean recortados, como ocurría al compartir la misma fila.
+
+        fila_base = fila * 2
+
+        tk.Label(
+            contenedor,
+            text=etiqueta,
+            font=("Segoe UI", 11, "bold"),
+            bg="#0F172A",
+            fg="white",
+            width=9,
+            anchor="w"
+        ).grid(
+            row=fila_base, column=0, rowspan=2,
+            sticky="w", padx=(0, 10)
+        )
+
+        entry = tk.Entry(
+            contenedor,
+            font=("Consolas", 12),
+            state="readonly",
+            readonlybackground="white",
+            fg="#0F172A",
+            relief="solid",
+            bd=1
+        )
+
+        scrollbar = tk.Scrollbar(
+            contenedor,
+            orient="horizontal",
+            command=entry.xview,
+            width=16,
+            bg="#64748B",
+            troughcolor="#CBD5E1",
+            activebackground="#1D4ED8"
+        )
+
+        entry.config(xscrollcommand=scrollbar.set)
+
+        entry.grid(
+            row=fila_base, column=1,
+            sticky="ew", ipady=6, pady=(6, 0)
+        )
+
+        scrollbar.grid(
+            row=fila_base + 1, column=1,
+            sticky="ew", pady=(2, 6)
+        )
+
+        return entry
 
     # ==========================================
     # AGREGAR NODO
@@ -719,6 +771,9 @@ class VentanaPrincipal:
             self.txt_nodo.focus_set()
             return
 
+        # Al agregar un nodo se limpia cualquier resaltado previo
+        self.valor_resaltado = None
+
         self.txt_nodo.delete(0, tk.END)
         self.txt_nodo.focus_set()
 
@@ -745,9 +800,17 @@ class VentanaPrincipal:
             self.txt_nodo.focus_set()
             return
 
-        if self.arbol.buscar(valor):
+        nodo_encontrado = self.arbol.buscar_nodo(valor)
+
+        if nodo_encontrado is not None:
+            # Se guarda el valor encontrado para resaltarlo en
+            # el canvas al redibujar el árbol.
+            self.valor_resaltado = valor
+            self.dibujar_arbol()
             messagebox.showinfo("Buscar Nodo", f"Valor {valor} encontrado en el árbol")
         else:
+            self.valor_resaltado = None
+            self.dibujar_arbol()
             messagebox.showinfo("Buscar Nodo", f"Valor {valor} no existe en el árbol")
 
         self.txt_nodo.delete(0, tk.END)
@@ -760,6 +823,7 @@ class VentanaPrincipal:
     def limpiar_arbol(self):
 
         self.arbol.limpiar()
+        self.valor_resaltado = None
         self.canvas.delete("all")
 
         for entry in (self.txt_preorden, self.txt_inorden, self.txt_posorden):
@@ -806,30 +870,6 @@ class VentanaPrincipal:
         if self.arbol.raiz is None:
             return
 
-        # Se asignan posiciones x usando un recorrido inorden
-        # (garantiza que no se crucen las ramas) y posiciones y
-        # según el nivel del nodo.
-
-        contador = [0]
-
-        def asignar_posiciones(nodo, nivel):
-
-            if nodo is None:
-                return
-
-            asignar_posiciones(nodo.izquierdo, nivel + 1)
-
-            nodo.x = contador[0]
-            nodo.y = nivel
-
-            contador[0] += 1
-
-            asignar_posiciones(nodo.derecho, nivel + 1)
-
-        asignar_posiciones(self.arbol.raiz, 1)
-
-        total_hojas = max(contador[0], 1)
-
         ancho_canvas = self.canvas.winfo_width()
         alto_canvas = self.canvas.winfo_height()
 
@@ -839,22 +879,39 @@ class VentanaPrincipal:
         if alto_canvas < 10:
             alto_canvas = 380
 
-        margen = 60
-        espacio_x = (ancho_canvas - 2 * margen) / max(total_hojas - 1, 1)
-        espacio_y = (alto_canvas - 2 * margen) / (self.arbol.NIVEL_MAXIMO - 1)
-
+        margen_x = 60
+        margen_y = 50
         radio = 18
 
-        def calcular_coordenadas(nodo):
+        espacio_y = (alto_canvas - 2 * margen_y) / max(self.arbol.NIVEL_MAXIMO - 1, 1)
 
-            px = margen + nodo.x * espacio_x
+        # ------------------------------------------------------
+        # Se asignan las posiciones mediante subdivisión binaria
+        # del ancho disponible: la raíz siempre queda centrada en
+        # el canvas, cada hijo izquierdo se ubica en el centro de
+        # la mitad izquierda del espacio de su padre y cada hijo
+        # derecho en el centro de la mitad derecha. De esta forma
+        # la raíz nunca se desplaza hacia un extremo, incluso en
+        # árboles inclinados hacia un solo lado, y los
+        # descendientes quedan distribuidos proporcionalmente
+        # según el nivel, tal como se espera en la representación
+        # gráfica de un ABB.
+        # ------------------------------------------------------
 
-            if total_hojas == 1:
-                px = ancho_canvas / 2
+        def asignar_posiciones(nodo, nivel, x_min, x_max):
 
-            py = margen + (nodo.y - 1) * espacio_y
+            if nodo is None:
+                return
 
-            return px, py
+            x_medio = (x_min + x_max) / 2
+
+            nodo.x = x_medio
+            nodo.y = margen_y + (nivel - 1) * espacio_y
+
+            asignar_posiciones(nodo.izquierdo, nivel + 1, x_min, x_medio)
+            asignar_posiciones(nodo.derecho, nivel + 1, x_medio, x_max)
+
+        asignar_posiciones(self.arbol.raiz, 1, margen_x, ancho_canvas - margen_x)
 
         # Dibujar primero las líneas (conexiones)
 
@@ -863,19 +920,15 @@ class VentanaPrincipal:
             if nodo is None:
                 return
 
-            x1, y1 = calcular_coordenadas(nodo)
-
             if nodo.izquierdo is not None:
-                x2, y2 = calcular_coordenadas(nodo.izquierdo)
                 self.canvas.create_line(
-                    x1, y1, x2, y2,
+                    nodo.x, nodo.y, nodo.izquierdo.x, nodo.izquierdo.y,
                     fill=self.COLOR_LINEA, width=2
                 )
 
             if nodo.derecho is not None:
-                x2, y2 = calcular_coordenadas(nodo.derecho)
                 self.canvas.create_line(
-                    x1, y1, x2, y2,
+                    nodo.x, nodo.y, nodo.derecho.x, nodo.derecho.y,
                     fill=self.COLOR_LINEA, width=2
                 )
 
@@ -884,22 +937,31 @@ class VentanaPrincipal:
 
         dibujar_lineas(self.arbol.raiz)
 
-        # Dibujar los nodos (círculos) encima de las líneas
+        # Dibujar los nodos (círculos) encima de las líneas.
+        # El nodo cuyo valor coincide con el último resultado de
+        # una búsqueda exitosa se resalta con otro color.
 
         def dibujar_nodos(nodo):
 
             if nodo is None:
                 return
 
-            x, y = calcular_coordenadas(nodo)
+            resaltado = (
+                self.valor_resaltado is not None
+                and nodo.valor == self.valor_resaltado
+            )
+
+            color_relleno = self.COLOR_NODO_RESALTADO if resaltado else self.COLOR_NODO
+            color_borde = self.COLOR_BORDE_RESALTADO if resaltado else self.COLOR_BORDE
+            ancho_borde = 3 if resaltado else 2
 
             self.canvas.create_oval(
-                x - radio, y - radio, x + radio, y + radio,
-                fill=self.COLOR_NODO, outline=self.COLOR_BORDE, width=2
+                nodo.x - radio, nodo.y - radio, nodo.x + radio, nodo.y + radio,
+                fill=color_relleno, outline=color_borde, width=ancho_borde
             )
 
             self.canvas.create_text(
-                x, y,
+                nodo.x, nodo.y,
                 text=str(nodo.valor),
                 font=("Segoe UI", 10, "bold"),
                 fill=self.COLOR_TEXTO
