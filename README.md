@@ -59,8 +59,7 @@ Y luego incluirlas en GitHub:
 ## 🏠 Ventana Principal
 
 <p align="center">
-<img width="988" height="674" alt="Captura de pantalla 2026-07-20 164415" src="https://github.com/user-attachments/assets/e7353313-d868-48bd-817d-4e74ee70c2ab" />
-">
+<img width="993" height="742" alt="image" src="https://github.com/user-attachments/assets/00685ee7-6b43-4a0b-b6f1-83371cbf5673" />
 </p>
 
 ---
